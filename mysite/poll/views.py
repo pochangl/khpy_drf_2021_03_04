@@ -1,9 +1,13 @@
 import json
-from django.http import HttpResponse
+from django.http import HttpResponse, QueryDict
 from .models import Question, Choice
 
 
 def question(request, id):
+    if request.method == 'PUT':
+        text = QueryDict(request.body).get('question_text')
+        Question.objects.filter(id=id).update(question_text=text)
+        return HttpResponse()
     try:
         question = Question.objects.get(id=id)
     except Question.DoesNotExist:
