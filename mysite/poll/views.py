@@ -4,7 +4,11 @@ from .models import Question, Choice
 
 
 def question(request, id):
-    question = Question.objects.get(id=id)
+    try:
+        question = Question.objects.get(id=id)
+    except Question.DoesNotExist:
+        return HttpResponse(status=404)
+
     data = dict(
         id=question.id,
         question_text=question.question_text,
@@ -20,7 +24,10 @@ def question(request, id):
 
 
 def vote(request):
-    choice = Choice.objects.get(id=request.POST.get('choice'))
+    try:
+        choice = Choice.objects.get(id=request.POST['choice'])
+    except (KeyError, Choice.DoesNotExist) as err:
+        return HttpResponse(status=401)
     choice.votes += 1
     choice.save()
-    return HttpResponse()
+    return HttpResponse(status=201)
