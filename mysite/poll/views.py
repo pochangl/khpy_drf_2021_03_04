@@ -20,7 +20,8 @@ def question(request, pk=None):
         question.save()
         return HttpResponse()
     elif request.method == 'DELETE':
-        Question.objects.get(pk=pk).delete()
+        question = Question.objects.get(pk=pk)
+        question.delete()
         return HttpResponse()
     try:
         question = Question.objects.get(pk=pk)
