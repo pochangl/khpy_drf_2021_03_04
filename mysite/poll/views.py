@@ -13,12 +13,14 @@ def question(request, pk=None):
         return HttpResponse()
     elif request.method == 'PUT':
         text = json.loads(request.body).get('question_text')
+        question = Question.objects.get(pk=pk)
         if len(text) > 200:
             return HttpResponse(status=400)
-        Question.objects.filter(pk=pk).update(question_text=text)
+        question.question_text = text
+        question.save()
         return HttpResponse()
     elif request.method == 'DELETE':
-        Question.objects.filter(pk=pk).delete()
+        Question.objects.get(pk=pk).delete()
         return HttpResponse()
     try:
         question = Question.objects.get(pk=pk)
