@@ -1,44 +1,25 @@
 import json
 from django.http import HttpResponse, QueryDict
 from django.utils.timezone import now
-from django.views import View
+from rest_framework.serializers import ModelSerializer
+from rest_framework.generics import CreateAPIView, UpdateAPIView, DestroyAPIView, RetrieveAPIView, GenericAPIView
 from .models import Question, Choice
 
 
-class QuestionAPIView(View):
-    def post(self, request):
-        text = QueryDict(request.body).get('question_text')
-        if len(text) > 200:
-            return HttpResponse(status=400)
-        Question.objects.create(question_text=text, pub_date=now())
-        return HttpResponse()
+class ChoiceSerializer(ModelSerializer):
+    class Meta:
+        model = Choice
+        fields = ('id', 'choice_text', 'votes')
 
-    def put(self, request, id):
-        text = QueryDict(request.body).get('question_text')
-        if len(text) > 200:
-            return HttpResponse(status=400)
-        Question.objects.filter(id=id).update(question_text=text)
-        return HttpResponse()
 
-    def delete(self, request, id):
-        Question.objects.filter(id=id).delete()
-        return HttpResponse()
+class QuestionSerializer(ModelSerializer):
+    choices = ChoiceSerializer(many=True, read_only=True)
 
-    def get(self, request, id):
-        try:
-            question = Question.objects.get(id=id)
-        except Question.DoesNotExist:
-            return HttpResponse(status=404)
+    class Meta:
+        model = Question
+        fields = ('id', 'question_text', 'choices')
 
-        data = dict(
-            id=question.id,
-            question_text=question.question_text,
-            choices=list(
-                dict(
-                    id=choice.id,
-                    choice_text=choice.choice_text,
-                )
-                for choice in Choice.objects.all()
-            ),
-        )
-        return HttpResponse(json.dumps(data))
+
+class QuestionAPIView(CreateAPIView, UpdateAPIView, DestroyAPIView, RetrieveAPIView, GenericAPIView):
+    serializer_class = QuestionSerializer
+    queryset = Question.objects.all()

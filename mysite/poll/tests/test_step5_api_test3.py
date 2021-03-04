@@ -8,7 +8,7 @@ from django.utils.timezone import now
 
 class TestQuestionAPI(TestCase):
     def test_create(self):
-        data = urllib.parse.urlencode({'question_text': 'text2'})
+        data = {'question_text': 'text2'}
         response = Client().post('/question/', data=data, content_type='application/json')
         try:
             question = Question.objects.get()
@@ -16,7 +16,7 @@ class TestQuestionAPI(TestCase):
             raise AssertionError('api 無法新增 Question')
 
     def test_create_error(self):
-        data = urllib.parse.urlencode({'question_text': 'text2' * 1000})
+        data = {'question_text': 'text2' * 1000}
         response = Client().post('/question/', data=data, content_type='application/json')
 
         assert Question.objects.count() == 0, 'Create 時, 字串長度超過 200 時, 不應該讓 Request 成功'
@@ -26,7 +26,7 @@ class TestQuestionAPI(TestCase):
         question = Question.objects.create(question_text='text', pub_date=now())
 
         data = urllib.parse.urlencode({'question_text': 'text2'})
-        response = Client().put('/question/{}/'.format(question.pk), data=data)
+        response = Client().put('/question/{}/'.format(question.pk), data=data, content_type='application/json')
         new_question = Question.objects.get(pk=question.pk)
 
         assert question.question_text == 'text'
@@ -36,7 +36,7 @@ class TestQuestionAPI(TestCase):
         question = Question.objects.create(question_text='text', pub_date=now())
 
         data = urllib.parse.urlencode({'question_text': 'text2' * 1000})
-        response = Client().put('/question/{}/'.format(question.pk), data=data)
+        response = Client().put('/question/{}/'.format(question.pk), data=data, content_type='application/json')
         new_question = Question.objects.get(pk=question.pk)
 
         assert question.question_text == 'text', '資料有錯, 所以 question_text 不應該改變'
