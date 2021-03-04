@@ -15,13 +15,15 @@ class QuestionAPIView(View):
 
     def put(self, request, pk):
         text = json.loads(request.body).get('question_text')
+        question = Question.objects.get(pk=pk)
         if len(text) > 200:
             return HttpResponse(status=400)
-        Question.objects.filter(pk=pk).update(question_text=text)
+        question.question_text = text
+        question.save()
         return HttpResponse()
-
-    def delete(self, request, pk):
-        Question.objects.filter(pk=pk).delete()
+    elif request.method == 'DELETE':
+        question = Question.objects.get(pk=pk)
+        question.delete()
         return HttpResponse()
 
     def get(self, request, pk):
