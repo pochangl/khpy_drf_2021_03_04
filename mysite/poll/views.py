@@ -37,13 +37,3 @@ def question(request, id=None):
         ),
     )
     return HttpResponse(json.dumps(data))
-
-
-def vote(request):
-    try:
-        choice = Choice.objects.get(id=request.POST['choice'])
-    except (KeyError, Choice.DoesNotExist) as err:
-        return HttpResponse(status=401)
-    choice.votes += 1
-    choice.save()
-    return HttpResponse(status=201)
