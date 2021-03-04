@@ -19,6 +19,6 @@ from poll import views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('question/<int:pk>/', views.QuestionAPIView.as_view()),
-    path('question/', views.QuestionAPIView.as_view()),
+    path('question/<int:pk>/', views.question),
+    path('question/', views.question),
 ]
