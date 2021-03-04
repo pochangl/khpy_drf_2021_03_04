@@ -21,7 +21,8 @@ class QuestionAPIView(View):
         question.question_text = text
         question.save()
         return HttpResponse()
-    elif request.method == 'DELETE':
+
+    def delete(self, request, pk):
         question = Question.objects.get(pk=pk)
         question.delete()
         return HttpResponse()
